@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+  
+    "name": "Bing Dictionary",
+    "description": "Bing dictionary plugin for browser.",
+    "version": "1.0",
+  
+    "permissions": [
+      "https://cn.bing.com/"
+    ],
+    "browser_action": {
+      "default_icon": "icon.ico",
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [{
+      "matches": ["*://*/*"],
+      "css": ["main.css"],
+      "js": ["main.js"]
+    }]
+  }
