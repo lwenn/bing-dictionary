@@ -1,25 +1,4 @@
 (function() {
-    
-    // function Stack(arr) {
-    //     if (arr instanceof Array) {
-    //         this.arr = arr;
-    //     } else {
-    //         this.arr = [];
-    //     }
-    // }
-    // Stack.prototype.push = function(element) {
-    //     this.arr.push(element);
-    // }
-    // Stack.prototype.pop = function() {
-    //     return this.arr.splice(this.length() - 1, 1);
-    // }
-    // Stack.prototype.length = function() {
-    //     return this.arr.length;
-    // }
-    // Stack.prototype.last = function() {
-    //     return this.arr[this.length() - 1];
-    // }
-
     const WIDTH = 300;
     const HEIGHT = 350;
 
@@ -27,6 +6,7 @@
         container: null,
         target: null,
         clickContainer: false,
+        lastWord: null,
 
         init: function() {
             this.initContainer();
@@ -53,12 +33,25 @@
                 this.clickContainer = false;
                 return;
             }
+
+            let words = (window.getSelection ? window.getSelection().toString() : document.selection.createRange().text).trim();
+            // 多于3个词的情况不查询
+            if (words.split(/\s+/).length > 3) {
+                return;
+            }
+
             let se = this;
-            let words = window.getSelection ? window.getSelection().toString() : document.selection.createRange().text;
             let xhr = new XMLHttpRequest();
             se.target = e.target;
             // console.log(e.clientX, e.clientY);
+
             if (words) {
+                if (se.lastWord === words) {
+                    se.showContainer(e, true);
+                    return;
+                }
+                se.lastWord = words;
+                se.showContainer(e);
                 xhr.open('get', '//cn.bing.com/dict/search?q=' + words);
                 // cros 跨域
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -88,14 +81,16 @@
             this.container.innerHTML = html;
             let content = this.container.querySelector('.content .qdef');
             if (content) {
+                // 把链接修改成正确的地址
                 let links = content.querySelectorAll('a');
                 for (let i = 0; i < links.length; i++) {
-                    if (links[i].href.indexOf('javascript:') === -1) {
+                    if (!/javascript:|https|http/.test(links[i].href)) {
                         links[i].target = '_blank';
                         links[i].href = '//cn.bing.com' + links[i].getAttribute('href');
                     }
                 }
             }
+            this.container.innerHTML = '';
             return content;
         },
 
@@ -171,15 +166,16 @@
             return html.substring(targetStart, targetEnd);
         },
 
-        showTranslation: function (e, element) {
-            if (!element) {
-                return;
+        /** 
+         * @param e 事件对象
+         * @param showLast 是否显示上一次查询结果
+         */
+        showContainer: function (e, showLast) {
+            if (!showLast) {
+                this.container.innerHTML = '';
+                this.container.className += ' loading';
+                this.container.style = `width: ${WIDTH}px; min-height: 50px;`;
             }
-            let div = document.createElement('div');
-            div.style = `width: ${WIDTH}px; max-height: ${HEIGHT}px`;
-            div.appendChild(element);
-            this.container.innerHTML = '';
-            this.container.appendChild(div);
 
             // let domRect = this.target.getBoundingClientRect();
             // let posLeft = domRect.left + pageXOffset - WIDTH / 2 + this.target.offsetWidth / 2;
@@ -187,13 +183,35 @@
             this.container.style.display = 'block';
 
             let conWdith = this.container.offsetWidth;
-            let posTop = e.clientY + pageYOffset + 25;
+            let posTop = e.clientY + pageYOffset + 20;
             let posLeft = e.clientX + pageXOffset - conWdith / 2;
-            posLeft = posLeft < 0 ? 0 : (posLeft > document.body.scrollWidth - conWdith ? document.body.scrollWidth - conWdith : posLeft);
+            posLeft = posLeft < 0 ? 0 : (
+                posLeft > document.body.scrollWidth - conWdith ? 
+                document.body.scrollWidth - conWdith : 
+                posLeft
+            );
 
             this.container.style.top = posTop + 'px';
             this.container.style.left = posLeft + 'px';
             this.container.scrollTo(0, 0);
+        },
+
+        /** 
+         * @param e 事件对象
+         * @param content 查询结果的 DOM 结点
+         * @param showLast 是否显示上一次查询结果
+         */
+        showTranslation: function (e, content) {
+            this.container.className = this.container.className.replace(' loading', '');
+            if (!content) {
+                content = document.createElement('div');
+                content.innerText = '无查询结果';
+                content.style = 'text-align: center';
+            }
+            let div = document.createElement('div');
+            div.style = `max-height: ${HEIGHT}px`;
+            div.appendChild(content);
+            this.container.appendChild(div);
         },
 
         hideTranslation: function() {

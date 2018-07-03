@@ -2,15 +2,14 @@
     display: none;
     position: absolute;
     z-index: 100;
-	padding: 20px;
-	color: #333;
-	font-size: 14px;
+	padding: 20px 10px;
+	font-family: "Helvetica Neue","Helvetica",Arial,sans-serif;
 	text-align: left;
 	box-sizing: border-box;
     border-radius: 10px; 
     border: 1px solid #ddd; 
-    background-color: #f8f8f8;
-    box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.15);
+    background: #f8f8f8;
+	box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.15);
 }
 
 .bing-dictionary-container::before {
@@ -24,42 +23,102 @@
 	transform: translateX(-50%);
 }
 
+@keyframes loading {
+	0% {
+		background-color: #ccc;
+		box-shadow: -25px 0 0 2px #aaa, 0 0 0 0 #ccc, 25px 0 0 0 #ccc;
+	}
+	33% {
+		background-color: #aaa;
+		box-shadow: -25px 0 0 0 #ccc, 0 0 0 2px #aaa, 25px 0 0 0 #ccc;
+	}
+	67% {
+		background-color: #ccc;
+		box-shadow: -25px 0 0 0 #ccc, 0 0 0 0 #ccc, 25px 0 0 2px #aaa;
+	}
+	100% {
+		background-color: #ccc;
+		box-shadow: -25px 0 0 2px #aaa, 0 0 0 0 #ccc, 25px 0 0 0 #ccc;
+	}
+}
+
+.bing-dictionary-container.loading::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	content: " ";
+	width: 10px;
+	height: 10px;
+	border-radius: 100%;
+	animation-name: loading;
+	animation-delay: 0.3s;
+	animation-duration: 0.5s;
+	animation-timing-function: ease;
+	animation-iteration-count: infinite;
+}
+
 .bing-dictionary-container > div {
-    font-size: 14px;
-    line-height: 1.5;
+	padding: 0 10px;
+	color: #333 !important;
+	font-size: 14px !important;
+    line-height: 1.5 !important;
     overflow: auto;
+}
+
+.bing-dictionary-container > div::-webkit-scrollbar {
+	width: 7px;
+}
+
+.bing-dictionary-container > div::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #8b8b8b;
+}
+
+.bing-dictionary-container > div::-webkit-scrollbar-track {
+	border-radius: 10px;
+	/* background-color: #fff; */
 }
 
 .bing-dictionary-container a,
 .bing-dictionary-container a:hover,
 .bing-dictionary-container a:link,
 .bing-dictionary-container a:visited {
-	color: #39c;
-    font-weight: 700;
-    text-decoration: none;
-	word-wrap: break-word;
-	border: none;
+	color: #39c !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+	word-wrap: break-word !important;
+	border: none !important;
 }
 
 .bing-dictionary-container a[href^=javascript] {
-	color: #333;
-	cursor: initial;
+	color: #333 !important;
+	cursor: initial !important;
+}
+
+.bing-dictionary-container h1,
+.bing-dictionary-container h2 {
+	margin: 0 !important;
+	color: inherit;
+	line-height: inherit;
 }
 
 .bing-dictionary-container h1 {
-	margin: 0;
-	font-size: 24px;
+	font-size: 28px !important;
+	font-weight: bold;
 }
 
 .bing-dictionary-container h2 {
-	margin: 0;
-	font-size: 20px;
+	font-size: 20px !important;
 }
 
 .bing-dictionary-container ul {
-	margin: 10px 0;
-	padding: 0;
-	list-style: none;
+	margin: 10px 0 !important;
+	padding: 0 !important;
+	color: inherit;
+	list-style: none !important;
 }
 
 .bing-dictionary-container .pos {
@@ -68,5 +127,10 @@
 }
 
 .bing-dictionary-container .df_div td {
+	width: auto;
 	vertical-align: top;
+}
+
+.bing-dictionary-container .li_exs {
+	color: #888;
 }
